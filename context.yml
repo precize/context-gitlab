@@ -1,0 +1,25 @@
+variables:
+  GIT_DEPTH: 100
+
+.git-script: &git-script |
+ cd $CI_PROJECT_DIR
+ git status
+ lines=$(git status -s -uno | wc -l)
+ if [ $lines -gt 0 ];then
+   echo "committing"
+   git config --global user.name "Precize"
+   git config --global user.email "noreply@precize.ai"
+   git commit -am "Resource tags updated for Terraform configurations by Precize"
+   git push -o ci.skip "https://${GITLAB_USER_NAME}:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}"
+ else
+   echo "no updated resources, nothing to commit."
+ fi
+
+.precize:run-context:
+ stage: precize-context
+ script:
+   - git checkout ${CI_COMMIT_REF_NAME}
+   - export YOR_VERSION=0.1.183
+   - wget -q -O - https://github.com/bridgecrewio/yor/releases/download/${YOR_VERSION}/yor_${YOR_VERSION}_linux_amd64.tar.gz | tar -xvz -C /tmp
+   - /tmp/yor tag -d . --tag-groups git --skip-tags git_file,git_org,git_modifiers,git_last_modified_by,git_last_modified_at --parsers Terraform --tag-prefix precize_ --tag-local-modules false
+   - *git-script
