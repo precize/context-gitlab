@@ -17,6 +17,7 @@ variables:
 
 .precize:run-context:
  stage: precize-context
+ allow_failure: true
  script:
    - git checkout ${CI_COMMIT_REF_NAME}
    - export YOR_VERSION=0.1.183
