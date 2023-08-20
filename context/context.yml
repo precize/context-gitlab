@@ -10,7 +10,7 @@ variables:
    git config --global user.name "Precize"
    git config --global user.email "noreply@precize.ai"
    git commit -am "Resource tags updated for Terraform configurations by Precize"
-   git push "https://${GITLAB_USER_NAME}:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}"
+   git push "https://${GITLAB_USER_NAME}:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" ${CI_COMMIT_REF_NAME}
  else
    echo "no updated resources, nothing to commit."
  fi
